@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Will You Accept My Requests</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f9c0e8;
+            color: #333;
+            text-align: center;
+        }
+        /* Banner at the top */
+        .banner {
+            background-color: #ff6bcb;
+            color: #fff;
+            padding: 30px;
+            font-size: 30px;
+            font-weight: bold;
+            font-family: 'Cursive', 'Georgia', serif;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+        }
+        /* Overlay with romantic background */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('image copy 7.png'); /* Placeholder URL for testing */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f46f9f;
+            font-size: 26px;
+            z-index: 2;
+            text-align: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .overlay h1 {
+            font-size: 36px;
+            font-family: 'Cursive', 'Georgia', serif;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        /* Main content initially hidden */
+        .content {
+            display: none;
+        }
+        /* Popup styling */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 3;
+            font-size: 18px;
+        }
+        .popup button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ff9aa2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        /* Grid container for date boxes */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        /* Date boxes styling */
+        .date-box {
+            background-color: #fff7f1;
+            padding: 20px;
+            border: 1px solid #ffb6c1;
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .date-box:hover {
+            transform: scale(1.05);
+            background-color: #ffe6e9;
+        }
+        /* Text styling */
+        h2 {
+            color: #ff6f91;
+            font-size: 22px;
+            font-family: 'Cursive', 'Georgia', serif;
+            margin-bottom: 8px;
+        }
+        h3 {
+            color: #ff6b6b;
+            font-size: 18px;
+            font-family: 'Cursive', 'Georgia', serif;
+            margin-top: 10px;
+        }
+        /* Ensuring all day images are of equal size */
+        .date-box img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+        /* Done button styling */
+        .done-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #fcaad0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .done-btn:hover {
+            background-color: #ff6f91;
+        }
+    
+        .not-done-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ffcccb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .not-done-btn:hover {
+            background-color: #ff7f7f;
+        }
+        /* Disable button style */
+        .disabled-btn {
+            background-color: #cccccc !important;
+            cursor: not-allowed !important;
+        }
+    </style>
+    <script>
+        // Show the main content and hide overlay when the Enter button is clicked
+        function closeOverlay() {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }
+
+        // Show popup, disable buttons, and set description
+        function showPopup(day, button, status) {
+            const popup = document.getElementById("popup");
+            popup.style.display = "block";
+            document.getElementById("popup-text").innerText = `${day} Date ${status}!`;
+
+            // Save to localStorage
+            localStorage.setItem(day, status);
+
+            // Update button and description
+            disableButtons(day, status);
+        }
+
+        // Function to disable buttons and set status
+        function disableButtons(day, status) {
+            const doneButton = document.getElementById(`${day}-done`);
+            const notDoneButton = document.getElementById(`${day}-not-done`);
+            const description = document.getElementById(`${day}-status`);
+
+            // Disable buttons
+            doneButton.classList.add("disabled-btn");
+            doneButton.disabled = true;
+            notDoneButton.classList.add("disabled-btn");
+            notDoneButton.disabled = true;
+
+            // Update status description
+            description.innerText = `${status}`;
+        }
+
+        // Check localStorage on page load
+        function checkStatus() {
+            const days = ["Movie", "Temple", "Workout", "ThumbsUp", "Fun DIY", "Street Food"];
+            days.forEach(day => {
+                const status = localStorage.getItem(day);
+                if (status) {
+                    disableButtons(day, status);
+                }
+            });
+        }
+
+        // Close popup
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        // Run checkStatus on page load
+        window.onload = checkStatus;
+    </script>
+</head>
+<body>
+    <div class="overlay" id="overlay">
+        <h1>Enter Something You Love</h1>
+        <p>"A journey of love awaits. Are you ready to make memories together?"</p>
+        <button onclick="closeOverlay()" style="margin-top: 20px; padding: 10px 20px; font-size: 18px;">Enter</button>
+    </div>
+
+    <div class="content" id="content">
+        <div class="banner">
+            Will You Accept My Requests?
+        </div>
+
+        <div class="grid-container">
+            <div class="date-box">
+                <h2>Monday</h2>
+                <img src="image.png" alt="Day1">
+                <h3>Movie Date</h3>
+                <p>11-11-2024</p>
+                <p id="Movie-status"></p>
+                <button id="Movie-done" class="done-btn" onclick="showPopup('Movie', this, 'Done')">Done</button>
+                <button id="Movie-not-done" class="not-done-btn" onclick="showPopup('Movie', this, 'Not Done')">Not Done</button>
+            </div>
+            <div class="date-box">
+                <h2>Tuesday</h2>
+                <img src="image copy 2.png" alt="Day2">
+                <h3>Temple Date</h3>
+                <p>12-11-2024</p>
+                <p id="Temple-status"></p>
+                <button id="Temple-done" class="done-btn" onclick="showPopup('Temple', this, 'Done')">Done</button>
+                <button id="Temple-not-done" class="not-done-btn" onclick="showPopup('Temple', this, 'Not Done')">Not Done</button>
+            </div>
+            <div class="date-box">
+                <h2>Wednesday</h2>
+                <img src="image copy 3.png" alt="Day3">
+                <h3>Workout Date</h3>
+                <p>13-11-2024</p>
+                <p id="Workout-status"></p>
+                <button id="Workout-done" class="done-btn" onclick="showPopup('Workout', this, 'Done')">Done</button>
+                <button id="Workout-not-done" class="not-done-btn" onclick="showPopup('Workout', this, 'Not Done')">Not Done</button>
+            </div>
+            <div class="date-box">
+                <h2>Thursday</h2>
+                <img src="image copy 4.png" alt="Day4">
+                <h3>ThumbsUp Date</h3>
+                <p>14-11-2024</p>
+                <p id="ThumbsUp-status"></p>
+                <button id="ThumbsUp-done" class="done-btn" onclick="showPopup('ThumbsUp', this, 'Done')">Done</button>
+                <button id="ThumbsUp-not-done" class="not-done-btn" onclick="showPopup('ThumbsUp', this, 'Not Done')">Not Done</button>
+            </div>
+            <div class="date-box">
+                <h2>Friday</h2>
+                <img src="image copy 5.png" alt="Day5">
+                <h3>Fun DIY Date</h3>
+                <p>15-11-2024</p>
+                <p id="Fun DIY-status"></p>
+                <button id="Fun DIY-done" class="done-btn" onclick="showPopup('Fun DIY', this, 'Done')">Done</button>
+                <button id="Fun DIY-not-done" class="not-done-btn" onclick="showPopup('Fun DIY', this, 'Not Done')">Not Done</button>
+            </div>
+            <div class="date-box">
+                <h2>Saturday</h2>
+                <img src="image copy.png" alt="Day6">
+                <h3>Street Food Date</h3>
+                <p>16-11-2024</p>
+                <p id="Street Food-status"></p>
+                <button id="Street Food-done" class="done-btn" onclick="showPopup('Street Food', this, 'Done')">Done</button>
+                <button id="Street Food-not-done" class="not-done-btn" onclick="showPopup('Street Food', this, 'Not Done')">Not Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Message -->
+    <div class="popup" id="popup">
+        <div id="popup-text"></div>
+        <button onclick="closePopup()">Close</button>
+    </div>
+</body>
+</html>
